@@ -88,18 +88,19 @@ class Field {
                     }
                 }
 
-                randRow = (rows) => {
-                    return Math.floor(math.random * rows)
-                }
-
-                randCol = (cols) => {
-                    return Math.floor(math.random * cols)
-                }
-
                 static generateField (rows, cols, percentage) {
                     let tmpArr = []
                     let arr = []
                     let freq = (rows*cols) * (percentage/100)
+                    let randRow = Math.Floor(Math.random() * rows);
+                    let randCol = Math.Floor(Math.random() * cols);
+                    console.log(randRow)
+                    console.log(randRow)
+                    console.log(randRow)
+                    console.log(randRow)
+                    console.log(randCol)
+                    console.log(randCol)
+                    console.log(randCol)
                     // console.log(typeof rows)
                     // console.log(typeof cols)
                     // console.log(typeof percentage)
@@ -116,7 +117,9 @@ class Field {
                         let row = tmpArr.slice( i * cols, (i + 1) * rows);
                         arr.push(row);
                     }
-                    arr[randRow(rows)][randCol(cols)] = hat
+                    if (arr[(Math.floor(Math.random() * rows))][(Math.floor(Math.random() * cols))] !== hole) {
+
+                    } 
                     // arr[(Math.floor(Math.random() * rows))][(Math.floor(Math.random() * cols))] = 'P'
                     return arr
                 }
