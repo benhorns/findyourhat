@@ -22,10 +22,14 @@ class Field {
 
     getMove() {
         const badMove = 'Out of bounds! try again!'
+        const moves ='udlr'
         console.clear()
         console.log(chalk.blue.bgRed.bold('Find your Hat!'));
         console.log(this.print())
         const input = prompt('What is your move? u: up, d: down, l: left, r: right ');
+        if (!moves.includes(input)) {
+            this.getMove()
+        }
         switch(input) {
             case 'u':
                 xCoord -=1
@@ -36,35 +40,35 @@ class Field {
                     xCoord = 0
                     this.getMove()
                 }
-                break;
-                case 'd':
+            break;
+            case 'd':
                     xCoord +=1
                     if (xCoord <= this.field.length) {
                         this.movingTo(xCoord)
                     } else {
-                        xCoord = this.field.length
-                        this.getMove()
-                    }
-                break;
-                case 'l':
-                    yCoord -=1
-                    if (yCoord >= 0) {
-                        this.movingTo(xCoord, yCoord)
-                    } else {
-                        yCoord = 0
-                        this.getMove()
-                    }
-                    break;
-                    case 'r':
-                        yCoord +=1
-                        if (yCoord <= this.field[0].length) {
+                        xCoord = this.field.length - 1
+                    this.getMove()
+            }
+            break;
+                    case 'l':
+                        yCoord -=1
+                        if (yCoord >= 0) {
                             this.movingTo(xCoord, yCoord)
                         } else {
-                            yCoord = this.field[0].length
+                            yCoord = 0
                             this.getMove()
-                    }
-                break;
-        }
+                        }
+                        break;
+                        case 'r':
+                            yCoord +=1
+                            if (yCoord <= this.field[0].length) {
+                                this.movingTo(xCoord, yCoord)
+                            } else {
+                                yCoord = this.field[0].length - 1
+                                this.getMove()
+                            }
+                            break;
+                        }
     }
                     
                     movingTo = (inputX = xCoord, inputY = yCoord,) => {
@@ -74,18 +78,24 @@ class Field {
                             this.getMove()
                         } else {
                             if (this.field[xCoord][yCoord] === hat ) {
-                            console.log('Congratulations you found your hat!')
-                            this.field[xCoord][yCoord] = '!'
-                            console.log(this.print()) }
-                            else if (this.field[xCoord][yCoord] === pathCharacter ) {
-                                this.getMove()
-                            } else {
-                            console.log('Oops you fell down a hole.')
-                            this.field[xCoord][yCoord] = 'X'
-                            console.log(this.print())
+                                console.log('Congratulations you found your hat!')
+                                this.field[xCoord][yCoord] = '!'
+                                console.log(this.print()) }
+                                else if (this.field[xCoord][yCoord] === pathCharacter ) {
+                                    this.getMove()
+                                } else {
+                                    console.log('Oops you fell down a hole.')
+                                    this.field[xCoord][yCoord] = 'X'
+                                    console.log(this.print())
+                                }
+                            this.playAgain();
+                            }
                         }
+                        
+                        playAgain = () => {
                         const input = prompt('Want to play again? y/n');
-                        switch(input) {
+                        if(input.includes('y') || input.includes('n')){
+                            switch(input) {
                             case 'y':
                                 const r = parseInt(prompt('How many rows do you want on the board?'))
                                 const c = parseInt(prompt('How many columns do you want on the board?'))
@@ -93,13 +103,15 @@ class Field {
                                 this.field = Field.generateField(r,c,p)
                                 xCoord = 0;
                                 yCoord = 0;
-                                this.getMove()
-                                break;
-                                case 'n':
-                                    console.log('Okay thanks for playing!')
-                                    break;
-                                }
+                        this.getMove()
+                        break;
+                        case 'n':
+                            console.log('Okay thanks for playing!')
+                            break;
                             }
+                        } else {
+                            this.playAgain()
+                        }
                         }
                         
                 static generateField (rows, cols, percentage) {
