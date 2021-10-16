@@ -20,7 +20,7 @@ class Field {
     }
 
     getMove() {
-        console.log('')
+        console.clear()
         console.log(this.print())
         console.log(this.field.length)
         console.log(this.field[0].length)
@@ -71,11 +71,9 @@ class Field {
     }
                     
                     movingTo = (inputX = xCoord, inputY = yCoord,) => {
-                        // myField.field[xCoord-1][yCoord] = '░';
+                        console.clear()
                         if (this.field[xCoord][yCoord] === fieldCharacter) {
                             this.field[xCoord][yCoord] = pathCharacter
-                            // this.field.player = 'X';
-                            // this.field[xCoord][yCoord] = pathCharacter;
                             console.log(this.print())
                             this.getMove()
                         } else {
