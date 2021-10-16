@@ -1,4 +1,5 @@
 const prompt = require('prompt-sync')({sigint: true});
+const chalk = require('chalk');
 
 const hat = '^';
 const hole = 'O';
@@ -20,11 +21,10 @@ class Field {
     }
 
     getMove() {
+        const badMove = 'Out of bounds! try again!'
         console.clear()
+        console.log(chalk.blue.bgRed.bold('Find your Hat!'));
         console.log(this.print())
-        console.log(this.field.length)
-        console.log(this.field[0].length)
-        // console.log(this.field[0].length)
         const input = prompt('What is your move? u: up, d: down, l: left, r: right ');
         switch(input) {
             case 'u':
@@ -32,7 +32,7 @@ class Field {
                 if (xCoord >= 0) {
                     this.movingTo(xCoord)
                 } else {
-                    console.log('Out of bound!')
+                    console.log(badMove)
                     xCoord = 0
                     this.getMove()
                 }
@@ -42,7 +42,6 @@ class Field {
                     if (xCoord <= this.field.length) {
                         this.movingTo(xCoord)
                     } else {
-                        console.log('Out of bound!')
                         xCoord = this.field.length
                         this.getMove()
                     }
@@ -52,7 +51,6 @@ class Field {
                     if (yCoord >= 0) {
                         this.movingTo(xCoord, yCoord)
                     } else {
-                        console.log('Out of bound!')
                         yCoord = 0
                         this.getMove()
                     }
@@ -62,7 +60,6 @@ class Field {
                         if (yCoord <= this.field[0].length) {
                             this.movingTo(xCoord, yCoord)
                         } else {
-                            console.log('Out of bounds!')
                             yCoord = this.field[0].length
                             this.getMove()
                     }
@@ -74,14 +71,15 @@ class Field {
                         console.clear()
                         if (this.field[xCoord][yCoord] === fieldCharacter) {
                             this.field[xCoord][yCoord] = pathCharacter
-                            console.log(this.print())
                             this.getMove()
                         } else {
                             if (this.field[xCoord][yCoord] === hat ) {
                             console.log('Congratulations you found your hat!')
                             this.field[xCoord][yCoord] = '!'
-                            console.log(this.print())
-                        } else {
+                            console.log(this.print()) }
+                            else if (this.field[xCoord][yCoord] === pathCharacter ) {
+                                this.getMove()
+                            } else {
                             console.log('Oops you fell down a hole.')
                             this.field[xCoord][yCoord] = 'X'
                             console.log(this.print())
@@ -143,34 +141,6 @@ class Field {
                 //     ['░', 'O', '░'],
                 //     ['░', '^', '░'],
                 // ]);
-                
-                // myField.getMove()
 
                 const myOtherField = new Field(Field.generateField(4,8,20))
-                // console.log(myOtherField.field)
                 myOtherField.getMove()
-                    
-
-
-
-// var stdin = process.stdin;
-// stdin.setRawMode(true);
-// stdin.resume();
-// stdin.setEncoding('utf8');
-
-// stdin.on('data', function(key){
-//     if (key == '\u001B\u005B\u0041') {
-//         console.log('up'); 
-//     }
-//     if (key == '\u001B\u005B\u0043') {
-//         console.log('right'); 
-//     }
-//     if (key == '\u001B\u005B\u0042') {
-//         console.log('down'); 
-//     }
-//     if (key == '\u001B\u005B\u0044') {
-//         console.log('left'); 
-//     }
-
-//     if (key == '\u0003') { process.exit(); }    // ctrl-c
-// });
