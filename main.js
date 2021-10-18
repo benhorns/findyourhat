@@ -111,7 +111,7 @@ class Field {
                                 this.field = Field.generateField(parseInt(c),parseInt(r),parseInt(p))
                                 xInd = 0;
                                 yInd = 0;
-                        this.getMove()
+                        this.start()
                         break;
                         case 'n':
                             console.log('Okay thanks for playing!')
@@ -121,12 +121,9 @@ class Field {
                             this.playAgain()
                         }
                         }
-
-    static generateField (rows, cols, percentage) {
-        let arr = []
-        let freq = Math.ceil((rows*cols) * (percentage/100))
-        console.clear();
-        console.log(chalk.blue.bgRed.bold('Welcome to .... Find your Hat!'));
+    
+    start = () => {
+        console.log(this.print())
         inquirer.prompt([
         {
             name: 'randStart',
@@ -136,21 +133,40 @@ class Field {
         },
         ]).then(answer => {
             if (answer.randStart === 'Yes') {
-                console.log(`You're position on the board will be randomly assigned.`)
+                let i = 0;
+                do {
+                let randRow = (Math.floor(Math.random() * (this.field.length-1)))
+                let randCol = (Math.floor(Math.random() * (this.field[0].length-1)))
+                   if (this.field[randRow][randCol] != hole && this.field[randRow][randCol] != hat) {
+                        xInd = randRow;
+                        yInd = randCol;
+                        this.field[randRow][randCol] = pathCharacter;
+                        i++;
+                    }
+                } while ( i < 1) 
+                this.getMove()
             } else {
                 console.log(`You will start in the top left corner of the board.`)
+                this.field[0][0] = pathCharacter;
+                this.getMove()
             }
         })
+    }
+
+    static generateField (rows, cols, percentage) {
+        let arr = []
+        let freq = Math.ceil((rows*cols) * (percentage/100))
+        console.clear();
+        console.log(chalk.blue.bgRed.bold('Welcome to .... Find your Hat!'));
         for (let i = 0; i < rows; i++) {
             arr.push( new Array(cols).fill(fieldCharacter))
         }   
-        arr[0][0] = pathCharacter;
         //Assigns player position to the top left corner of the field.
         let i = 0;
         do {
             let randRow = (Math.floor(Math.random() * rows))
             let randCol = (Math.floor(Math.random() * cols))
-            if (arr[randRow][randCol] != hole && arr[randRow][randCol] != pathCharacter) {
+            if (arr[randRow][randCol] != hole && (randRow != 0 && randCol != 0)) {
                 arr[randRow][randCol] = hole;
                 i++;
             }
@@ -168,8 +184,7 @@ class Field {
         while (i < 1) 
         return arr
         }
-
-    }
+}
                 
                 // const myField = new Field([
                 //     ['*', '░', 'O'],
@@ -177,5 +192,5 @@ class Field {
                 //     ['░', '^', '░'],
                 // ]);
 
-                const myOtherField = new Field(Field.generateField(4,8,20))
-                
+const myOtherField = new Field(Field.generateField(4,8,20))
+myOtherField.start()    
