@@ -15,6 +15,8 @@ class Field {
     
     constructor(field) {
         this.field = field
+        this.hardMode = false;
+        this.moveCounter = 0;
     }
     
     print() {
@@ -25,6 +27,7 @@ class Field {
         const badMove = 'Out of bounds! try again!'
         const moves ='udlr'
         console.clear()
+        console.log(this.moveCounter)
         console.log(chalk.blue.bgRed.bold('Find your Hat!'));
         console.log(this.print())
         const input = prompt('What is your move? u: up, d: down, l: left, r: right ');
@@ -41,16 +44,16 @@ class Field {
                     xInd = 0
                     this.getMove()
                 }
-            break;
-            case 'd':
+                break;
+                case 'd':
                     xInd +=1
                     if (xInd <= this.field.length - 1) {
                         this.movingTo(xInd)
                     } else {
                         xInd = this.field.length - 1
-                    this.getMove()
-            }
-            break;
+                        this.getMove()
+                    }
+                    break;
                     case 'l':
                         yInd -=1
                         if (yInd >= 0) {
@@ -70,30 +73,32 @@ class Field {
                             }
                             break;
                         }
-    }
+                    }
                     
-                    movingTo = (inputX = xInd, inputY = yInd,) => {
-                        console.clear()
-                        if (this.field[xInd][yInd] === fieldCharacter) {
-                            this.field[xInd][yInd] = pathCharacter
-                            this.getMove()
-                        } else {
-                            if (this.field[xInd][yInd] === hat ) {
-                                console.log('Congratulations you found your hat!')
-                                this.field[xInd][yInd] = '!'
-                                console.log(this.print()) }
-                                else if (this.field[xInd][yInd] === pathCharacter ) {
-                                    this.getMove()
-                                } else {
-                                    console.log('Oops you fell down a hole.')
-                                    this.field[xInd][yInd] = 'X'
-                                    console.log(this.print())
-                                }
-                            this.playAgain();
-                            }
-                        }
+    movingTo = (inputX = xInd, inputY = yInd,) => {
+            console.clear()
+            this.moveCounter++
+        if (this.field[xInd][yInd] === fieldCharacter) {
+            this.field[xInd][yInd] = pathCharacter
+            this.getMove()
+        } else {
+        if (this.field[xInd][yInd] === hat ) {
+            console.log('Congratulations you found your hat!')
+            this.field[xInd][yInd] = '!'
+            console.log(this.print()) }
+        else if (this.field[xInd][yInd] === pathCharacter ) {
+            this.getMove()
+        } else {
+            console.log('Oops you fell down a hole.')
+            this.field[xInd][yInd] = 'X'
+            console.log(this.print())
+        }
+        this.playAgain();
+        }
+    }
                         
                         playAgain = () => {
+                            this.moveCounter = 0;
                             const input = prompt('Want to play again? y/n');
                             const numbers = '1234567890'
                             if(('yn').includes(input)){
@@ -131,25 +136,32 @@ class Field {
             message: 'Do you want to be randomly assigned a starting position on the board?',
             choices: ['Yes', 'No'],
         },
+        {
+            name: 'hardMode',
+            type: 'list',
+            message: 'Do you want to play on hard mode (after every 3 moves a new hole will randomly be added to the board?',
+            choices: ['Yes', 'No'],
+        },
         ]).then(answer => {
             if (answer.randStart === 'Yes') {
                 let i = 0;
                 do {
                 let randRow = (Math.floor(Math.random() * (this.field.length-1)))
                 let randCol = (Math.floor(Math.random() * (this.field[0].length-1)))
-                   if (this.field[randRow][randCol] != hole && this.field[randRow][randCol] != hat) {
-                        xInd = randRow;
-                        yInd = randCol;
-                        this.field[randRow][randCol] = pathCharacter;
-                        i++;
-                    }
+                if (this.field[randRow][randCol] != hole && this.field[randRow][randCol] != hat) {
+                    xInd = randRow;
+                    yInd = randCol;
+                    this.field[randRow][randCol] = pathCharacter;
+                    i++;
+                }
                 } while ( i < 1) 
-                this.getMove()
-            } else {
+                } else {
                 console.log(`You will start in the top left corner of the board.`)
                 this.field[0][0] = pathCharacter;
-                this.getMove()
-            }
+                }
+            answer.hardMode === 'Yes' ? this.hardMode = true : this.hardMode = false;
+            console.log(this.hardMode)
+            this.getMove()
         })
     }
 
