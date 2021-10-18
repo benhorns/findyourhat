@@ -17,18 +17,22 @@ class Field {
         this.field = field
         this.hardMode = false;
         this.moveCounter = 0;
+        this.randX = Math.floor(Math.random() * (this.field.length-1));
+        this.randY = Math.floor(Math.random() * (this.field[0].length-1));
     }
     
     print() {
         return this.field.join('\n').replace(/,/g, '')
     }
-
+    
     getMove() {
         const badMove = 'Out of bounds! try again!'
         const moves ='udlr'
         console.clear()
-        console.log(this.moveCounter)
         console.log(chalk.blue.bgRed.bold('Find your Hat!'));
+        console.log(this.hardMode)
+        console.log(this.randX)
+        console.log(this.randY)
         console.log(this.print())
         const input = prompt('What is your move? u: up, d: down, l: left, r: right ');
         if (!moves.includes(input)) {
@@ -74,58 +78,69 @@ class Field {
                             break;
                         }
                     }
+
                     
     movingTo = (inputX = xInd, inputY = yInd,) => {
-            console.clear()
-            this.moveCounter++
-        if (this.field[xInd][yInd] === fieldCharacter) {
+        this.moveCounter++
+        if (this.field[xInd][yInd] === fieldCharacter || this.field[xInd][yInd] === pathCharacter) {
             this.field[xInd][yInd] = pathCharacter
-            this.getMove()
+            this.hardMode && this.moveCounter % 3 === 0 ? this.hardGame() : this.getMove();
         } else {
-        if (this.field[xInd][yInd] === hat ) {
-            console.log('Congratulations you found your hat!')
-            this.field[xInd][yInd] = '!'
-            console.log(this.print()) }
-        else if (this.field[xInd][yInd] === pathCharacter ) {
-            this.getMove()
-        } else {
-            console.log('Oops you fell down a hole.')
-            this.field[xInd][yInd] = 'X'
-            console.log(this.print())
-        }
-        this.playAgain();
+            if (this.field[xInd][yInd] === hat ) {
+                console.log('Congratulations you found your hat!')
+                this.field[xInd][yInd] = '!'
+                console.log(this.print()) 
+            }else {
+                console.log('Oops you fell down a hole.')
+                this.field[xInd][yInd] = 'X'
+                console.log(this.print())
+            }
+            this.playAgain();
         }
     }
+    
+    hardGame = () => {
+        let i = 0;
+        do {
+        this.randX = (Math.floor(Math.random() * (this.field.length-1)))
+        this.randY = (Math.floor(Math.random() * (this.field[0].length-1)))
+        if (this.field[this.randX][this.randY] != hole && this.field[this.randX][this.randY] != hat &&  this.field[this.randX][this.randY] != pathCharacter ) {
+            this.field[this.randX][this.randY] = hole;
+            i++;
+        }
+        } while ( i < 1) 
+        this.getMove();
+    }
                         
-                        playAgain = () => {
-                            this.moveCounter = 0;
-                            const input = prompt('Want to play again? y/n');
-                            const numbers = '1234567890'
-                            if(('yn').includes(input)){
-                            // if(input === 'y' || input === 'n'){
-                            switch(input) {
-                                case 'y':
-                                    let c = ''
-                                    let r = ''
-                                    let p = ''
-                                    do{ 
-                                        c = (prompt('Please enter a number for the number of columns you want on the board.'))
-                                        r = (prompt('Please enter a number for the number of rows you want on the board.')) 
-                                        p = (prompt('Please enter a number for the percentage of holes you want on the board.'))
-                                    } while (isNaN(c) || isNaN(r) || isNaN(p))
-                                this.field = Field.generateField(parseInt(c),parseInt(r),parseInt(p))
-                                xInd = 0;
-                                yInd = 0;
-                        this.start()
-                        break;
-                        case 'n':
-                            console.log('Okay thanks for playing!')
-                            break;
-                            }
-                        } else {
-                            this.playAgain()
-                        }
-                        }
+    playAgain = () => {
+        this.moveCounter = 0;
+        const input = prompt('Want to play again? y/n');
+        const numbers = '1234567890'
+        if(('yn').includes(input)){
+        // if(input === 'y' || input === 'n'){
+        switch(input) {
+            case 'y':
+                let c = ''
+                let r = ''
+                let p = ''
+                do{ 
+                    c = (prompt('Please enter a number for the number of columns you want on the board.'))
+                    r = (prompt('Please enter a number for the number of rows you want on the board.')) 
+                    p = (prompt('Please enter a number for the percentage of holes you want on the board.'))
+                } while (isNaN(c) || isNaN(r) || isNaN(p))
+            this.field = Field.generateField(parseInt(c),parseInt(r),parseInt(p))
+            xInd = 0;
+            yInd = 0;
+    this.start()
+    break;
+    case 'n':
+        console.log('Okay thanks for playing!')
+        break;
+        }
+    } else {
+        this.playAgain()
+    }
+    }
     
     start = () => {
         console.log(this.print())
