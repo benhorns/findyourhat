@@ -1,5 +1,6 @@
 const prompt = require('prompt-sync')({sigint: true});
 const chalk = require('chalk');
+const inquirer = require('inquirer');
 
 const hat = '^';
 const hole = 'O';
@@ -120,40 +121,55 @@ class Field {
                             this.playAgain()
                         }
                         }
-                        
-                static generateField (rows, cols, percentage) {
-                    let arr = []
-                    let freq = Math.ceil((rows*cols) * (percentage/100))
-                    console.log(arr.length)
-                    for (let i = 0; i < rows; i++) {
-                        arr.push( new Array(cols).fill(fieldCharacter))
-                    }   
-                    arr[0][0] = pathCharacter;
-                    console.log(Math.ceil(freq))
-                    let i = 0;
-                    do {
-                        let randRow = (Math.floor(Math.random() * rows))
-                        let randCol = (Math.floor(Math.random() * cols))
-                        if (arr[randRow][randCol] != hole && arr[randRow][randCol] != pathCharacter) {
-                            arr[randRow][randCol] = hole;
-                            i++;
-                        }
-                    }
-                    while (i < freq) 
-                    i = 0;
-                    do {
-                        let randRow = (Math.floor(Math.random() * rows))
-                        let randCol = (Math.floor(Math.random() * cols))
-                        if (arr[randRow][randCol] != hole && arr[randRow][randCol] != pathCharacter) {
-                            arr[randRow][randCol] = hat;
-                            i++;
-                        }
-                    }
-                    while (i < 1) 
-                    return arr
-                }
 
+    static generateField (rows, cols, percentage) {
+        let arr = []
+        let freq = Math.ceil((rows*cols) * (percentage/100))
+        console.clear();
+        console.log(chalk.blue.bgRed.bold('Welcome to .... Find your Hat!'));
+        inquirer.prompt([
+        {
+            name: 'randStart',
+            type: 'list',
+            message: 'Do you want to be randomly assigned a starting position on the board?',
+            choices: ['Yes', 'No'],
+        },
+        ]).then(answer => {
+            if (answer.randStart === 'Yes') {
+                console.log(`You're position on the board will be randomly assigned.`)
+            } else {
+                console.log(`You will start in the top left corner of the board.`)
             }
+        })
+        for (let i = 0; i < rows; i++) {
+            arr.push( new Array(cols).fill(fieldCharacter))
+        }   
+        arr[0][0] = pathCharacter;
+        //Assigns player position to the top left corner of the field.
+        let i = 0;
+        do {
+            let randRow = (Math.floor(Math.random() * rows))
+            let randCol = (Math.floor(Math.random() * cols))
+            if (arr[randRow][randCol] != hole && arr[randRow][randCol] != pathCharacter) {
+                arr[randRow][randCol] = hole;
+                i++;
+            }
+        }
+        while (i < freq) 
+        i = 0;
+        do {
+            let randRow = (Math.floor(Math.random() * rows))
+            let randCol = (Math.floor(Math.random() * cols))
+            if (arr[randRow][randCol] != hole && arr[randRow][randCol] != pathCharacter) {
+                arr[randRow][randCol] = hat;
+                i++;
+            }
+        }
+        while (i < 1) 
+        return arr
+        }
+
+    }
                 
                 // const myField = new Field([
                 //     ['*', '░', 'O'],
@@ -162,4 +178,4 @@ class Field {
                 // ]);
 
                 const myOtherField = new Field(Field.generateField(4,8,20))
-                myOtherField.getMove()
+                
