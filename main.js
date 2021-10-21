@@ -88,7 +88,7 @@ class Field {
     movingTo = () => {
         this.moveCounter++
         if (this.field[this.row][this.col] === fieldCharacter || this.field[this.row][this.col] === pathCharacter) {
-            this.field[this.row][this.col] = chalk.red(pathCharacter)
+            this.field[this.row][this.col] = pathCharacter;
             this.hardMode && this.moveCounter % 3 === 0 ? this.hardGame() : this.getMove();
         } else {
             console.clear()
