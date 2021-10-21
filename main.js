@@ -17,6 +17,8 @@ class Field {
         this.field = field
         this.hardMode = false;
         this.moveCounter = 0;
+        this.row = 0
+        this.col = 0
         this.randX = Math.floor(Math.random() * (this.field.length-1));
         this.randY = Math.floor(Math.random() * (this.field[0].length-1));
     }
@@ -25,54 +27,57 @@ class Field {
         return this.field.join('\n').replace(/,/g, '')
     }
     
-    getMove() {
-        const badMove = 'Out of bounds! try again!'
+    getMove(row = 0,col = 0) {        const badMove = 'Out of bounds! try again!'
         const moves ='udlr'
         console.clear()
         console.log(chalk.blue.bgRed.bold('Find your Hat!'));
-        console.log(this.hardMode)
-        console.log(this.randX)
-        console.log(this.randY)
         console.log(this.print())
+        this.field[this.row][this.col] = fieldCharacter;
+
         const input = prompt('What is your move? u: up, d: down, l: left, r: right ');
         if (!moves.includes(input)) {
             this.getMove()
         }
         switch(input) {
             case 'u':
-                xInd -=1
+                this.row -=1
                 if (xInd >= 0) {
-                    this.movingTo(xInd)
+                    this.movingTo()
                 } else {
                     console.log(badMove)
-                    xInd = 0
+                    this.row = 0
                     this.getMove()
+                    this.field[this.row][this.col] = chalk.red(pathCharacter);
+
                 }
             break;
             case 'd':
-                xInd +=1
-                if (xInd <= this.field.length - 1) {
-                    this.movingTo(xInd)
+                this.row +=1
+                if (this.row <= this.field.length - 1) {
+                    this.movingTo()
                 } else {
-                    xInd = this.field.length - 1
+                    this.row = this.field.length - 1
+                    this.field[this.row][this.col] = chalk.red(pathCharacter);
                     this.getMove()
                 }
             break;
             case 'l':
-                yInd -=1
-                if (yInd >= 0) {
-                    this.movingTo(xInd, yInd)
+                this.col -=1
+                if (this.col >= 0) {
+                    this.movingTo()
                 } else {
-                    yInd = 0
+                    this.col = 0
+                    this.field[this.row][this.col] = chalk.red(pathCharacter);
                     this.getMove()
                 }
             break;
             case 'r':
-                yInd +=1
-                if (yInd <= this.field[0].length - 1) {
-                    this.movingTo(xInd, yInd)
+                this.col +=1
+                if (this.col <= this.field[0].length - 1) {
+                    this.movingTo()
                 } else {
-                    yInd = this.field[0].length - 1
+                    this.col = this.field[0].length - 1
+                    this.field[this.row][this.col] = chalk.red(pathCharacter);
                     this.getMove()
                 }
                 break;
@@ -80,19 +85,21 @@ class Field {
     }
 
                     
-    movingTo = (inputX = xInd, inputY = yInd,) => {
+    movingTo = () => {
         this.moveCounter++
-        if (this.field[xInd][yInd] === fieldCharacter || this.field[xInd][yInd] === pathCharacter) {
-            this.field[xInd][yInd] = pathCharacter
+        if (this.field[this.row][this.col] === fieldCharacter || this.field[this.row][this.col] === pathCharacter) {
+            this.field[this.row][this.col] = chalk.red(pathCharacter)
             this.hardMode && this.moveCounter % 3 === 0 ? this.hardGame() : this.getMove();
         } else {
-            if (this.field[xInd][yInd] === hat ) {
-                console.log('Congratulations you found your hat!')
-                this.field[xInd][yInd] = '!'
+            console.clear()
+            if (this.field[this.row][this.col] === hat ) {
+                this.field[this.row][this.col] = chalk.blue.bgWhite('!');
+                console.clear()
+                console.log(chalk.blue.bgWhite('Congratulations you found your hat!'))
                 console.log(this.print()) 
             }else {
-                console.log('Oops you fell down a hole.')
-                this.field[xInd][yInd] = 'X'
+                console.log(chalk.white.bgRed('XXX Oops you fell down a Hole XXX'))
+                this.field[this.row][this.col] = chalk.bgRed('X');
                 console.log(this.print())
             }
             this.playAgain();
@@ -160,23 +167,26 @@ class Field {
         ]).then(answer => {
             if (answer.randStart === 'Yes') {
                 let i = 0;
+                console.log(this.randX)
+                console.log(this.randY)
                 do {
-                    let randRow = (Math.floor(Math.random() * (this.field.length-1)))
-                    let randCol = (Math.floor(Math.random() * (this.field[0].length-1)))
-                    if (this.field[randRow][randCol] != hole && this.field[randRow][randCol] != hat) {
-                        xInd = randRow;
-                        yInd = randCol;
-                        this.field[randRow][randCol] = pathCharacter;
+                    this.row = (Math.floor(Math.random() * (this.field.length-1)))
+                    this.col = (Math.floor(Math.random() * (this.field[0].length-1)))
+                    if (this.field[this.row][this.col] != hole && this.field[this.row][this.col] != hat) {
+                        this.field[this.row][this.col] = pathCharacter;
+                        console.log(this.field[this.row][this.col])
                         i++;
+                        this.getMove(this.row,this.col)
                     }
+                    else {}
                 } while ( i < 1) 
             } else {
                 console.log(`You will start in the top left corner of the board.`)
-                this.field[0][0] = pathCharacter;
+                this.field[this.row][this.col] = pathCharacter;
             }
             answer.hardMode === 'Yes' ? this.hardMode = true : this.hardMode = false;
             console.log(this.hardMode)
-            this.getMove()
+            this.getMove(this.col,this.row)
         })
     }
                 
