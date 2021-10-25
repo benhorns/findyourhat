@@ -1,15 +1,15 @@
 const prompt = require('prompt-sync')({sigint: true});
 const chalk = require('chalk');
 const inquirer = require('inquirer');
+const { down } = require('inquirer/lib/utils/readline');
 
 const hat = '^';
 const hole = 'O';
 const fieldCharacter = '░';
 const pathCharacter = '*';
 
-let xInd = 0
-let yInd = 0
-
+var stdin = process.stdin;
+  
 
 class Field {
     
@@ -27,21 +27,54 @@ class Field {
         return this.field.join('\n').replace(/,/g, '')
     }
     
-    getMove(row = 0,col = 0) {        const badMove = 'Out of bounds! try again!'
-        const moves ='udlr'
-        console.clear()
-        console.log(chalk.blue.bgRed.bold('Find your Hat!'));
-        console.log(this.print())
-        this.field[this.row][this.col] = fieldCharacter;
 
-        const input = prompt('What is your move? u: up, d: down, l: left, r: right ');
-        if (!moves.includes(input)) {
+    getMove(move) {        
+    const badMove = 'Out of bounds! try again!'
+    const moves ='udlr'
+    const length = this.field.length - 1
+    console.clear()
+    console.log(chalk.blue.bgRed.bold('Find your Hat!'));
+    console.log(this.print())
+    this.field[this.row][this.col] = fieldCharacter;
+    console.log(move)
+    stdin.setRawMode(true);
+    stdin.resume();
+    stdin.setEncoding('utf8');
+    stdin.on('data', function(key){
+    console.clear()
+    if (key == '\u001B\u005B\u0041') {
+        myOtherField.getMove('up')
+    }
+    if (key == '\u001B\u005B\u0043') {
+        myOtherField.getMove('right')
+    }
+    if (key == '\u001B\u005B\u0042') {
+        console.log(down)
+        this.row +=1
+        if (this.row <= length) {
+            this.movingTo()
+        } else {
+            this.row = length
+            this.field[this.row][this.col] = chalk.red(pathCharacter);
             this.getMove()
-        }
-        switch(input) {
-            case 'u':
+        }    
+    }
+    if (key == '\u001B\u005B\u0044') {
+         myOtherField.getMove('left')
+
+    }
+    
+    if (key == '\u0003') { process.exit(); }    // ctrl-c
+})
+
+        // const input = prompt('What is your move? u: up, d: down, l: left, r: right ');
+        // if (!moves.includes(input)) {
+        //     this.getMove()
+        // }
+        switch(move) {
+            case 'up':
                 this.row -=1
-                if (xInd >= 0) {
+                if (this.row >= 0) {
                     this.movingTo()
                 } else {
                     console.log(badMove)
@@ -51,8 +84,8 @@ class Field {
 
                 }
             break;
-            case 'd':
-                this.row +=1
+            case 'down':
+            this.row +=1
                 if (this.row <= this.field.length - 1) {
                     this.movingTo()
                 } else {
@@ -61,7 +94,7 @@ class Field {
                     this.getMove()
                 }
             break;
-            case 'l':
+            case 'left':
                 this.col -=1
                 if (this.col >= 0) {
                     this.movingTo()
@@ -71,7 +104,7 @@ class Field {
                     this.getMove()
                 }
             break;
-            case 'r':
+            case 'right':
                 this.col +=1
                 if (this.col <= this.field[0].length - 1) {
                     this.movingTo()
@@ -136,8 +169,6 @@ class Field {
                 p = (prompt('Please enter a number for the percentage of holes you want on the board.'))
             } while (isNaN(c) || isNaN(r) || isNaN(p))
             this.field = Field.generateField(parseInt(c),parseInt(r),parseInt(p))
-            xInd = 0;
-            yInd = 0;
             this.start()
             break;
             case 'n':
@@ -182,6 +213,8 @@ class Field {
                 } while ( i < 1) 
             } else {
                 console.log(`You will start in the top left corner of the board.`)
+                this.row = 0;
+                this.col = 0;
                 this.field[this.row][this.col] = pathCharacter;
             }
             answer.hardMode === 'Yes' ? this.hardMode = true : this.hardMode = false;
@@ -222,11 +255,33 @@ class Field {
         }
     }
             
-            // const myField = new Field([
-                //     ['*', '░', 'O'],
-                //     ['░', 'O', '░'],
-                //     ['░', '^', '░'],
-                // ]);
+            const myField = new Field([
+                    ['*', '░', 'O'],
+                    ['░', 'O', '░'],
+                    ['░', '^', '░'],
+                ]);
+
+// class Cell {
+//     constructor(col , row) {
+//         this.col = col;
+//         this.row = row;
+
+//         this.visited = false;
+//     }
+
+//     index = (col, row) => {
+//         if (i < 0 || j < 0  || i > cols - 1 || j > rows - 1) {
+//           return -1;
+//         }
+//         return i + j * cols;
+//       }
+
+// }
+
+// const current = new Cell(0,0)
+// console.log(current
+
+
 
 const myOtherField = new Field(Field.generateField(4,8,20))
-myOtherField.start()    
+myOtherField.start()  
